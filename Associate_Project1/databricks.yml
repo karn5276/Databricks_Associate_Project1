@@ -1,0 +1,27 @@
+# This is a Databricks asset bundle definition for Associate_Project1.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: Daily_Orders_Data_Pipeline
+  uuid: 19b5c0e2-9c8f-4231-8075-7719d184389f
+
+include:
+  - resources/*.yml
+
+targets:
+  dev:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-2ab0e8d6-d8fd.cloud.databricks.com
+      root_path: /Workspace/Users/${workspace.current_user.userName}/Deploy_Project_Bundle/.bundle/${bundle.name}/${bundle.target}
+
+  prod:
+    workspace:
+      host: https://dbc-955bafe0-9eb9.cloud.databricks.com
+      root_path: /Workspace/Deploy_Project_Bundle/.bundle/${bundle.name}/${bundle.target}
+      profile: prod
+
