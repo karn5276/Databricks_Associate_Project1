@@ -1,0 +1,40 @@
+resources:
+  jobs:
+    Daily_Orders_Data_Pipeline:
+      name: Daily_Orders_Data_Pipeline
+      trigger:
+        pause_status: UNPAUSED
+        periodic:
+          interval: 12
+          unit: HOURS
+      tasks:
+        - task_key: generate_raw_order_data
+          notebook_task:
+            notebook_path: ../src/generate_raw_data_daily/orders_data.ipynb
+            source: WORKSPACE
+        - task_key: bronze_order_ingestion
+          depends_on:
+            - task_key: generate_raw_order_data
+          notebook_task:
+            notebook_path: ../src/bronze/orders_ingestion.ipynb
+            source: WORKSPACE
+        - task_key: build_order_transformation
+          depends_on:
+            - task_key: bronze_order_ingestion
+            - task_key: lkp_product_table
+          notebook_task:
+            notebook_path: ../src/silver/orders_transformation.ipynb
+            source: WORKSPACE
+        - task_key: build_order_dim_fact_tables
+          depends_on:
+            - task_key: build_order_transformation
+          notebook_task:
+            notebook_path: ../src/gold/Build_Order_Dim.ipynb
+            source: WORKSPACE
+        - task_key: lkp_product_table
+          notebook_task:
+            notebook_path: ../src/initialize_tables/initilaize_lkp_product.ipynb
+            source: WORKSPACE
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
