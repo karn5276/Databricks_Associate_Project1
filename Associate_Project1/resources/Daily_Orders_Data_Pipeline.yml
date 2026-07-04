@@ -5,8 +5,8 @@ resources:
       trigger:
         pause_status: UNPAUSED
         periodic:
-          interval: 12
-          unit: HOURS
+          interval: 1
+          unit: DAYS
       tasks:
         - task_key: generate_raw_order_data
           notebook_task:
