@@ -1,0 +1,24 @@
+resources:
+  jobs:
+    incoming_customer_cdc:
+      name: incoming_customer_cdc
+      tasks:
+        - task_key: customer_cdc_ingestion
+          notebook_task:
+            notebook_path: ../src/Assignment_02_CDC/Bronze/02_Load_Customer_CDC.ipynb
+            source: WORKSPACE
+        - task_key: build_transformation_cdc_customer
+          depends_on:
+            - task_key: customer_cdc_ingestion
+          notebook_task:
+            notebook_path: ../src/Assignment_02_CDC/Silver/04_Clean_Customer_CDC.ipynb
+            source: WORKSPACE
+        - task_key: merge_customer_master_and_customer_cdc
+          depends_on:
+            - task_key: build_transformation_cdc_customer
+          notebook_task:
+            notebook_path: ../src/Assignment_02_CDC/Gold/06_Merge_Customer_Master.ipynb
+            source: WORKSPACE
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
